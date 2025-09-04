@@ -62,10 +62,17 @@
 
 
 #include <ATen/ATen.h>
-#include <THC/THCAtomics.cuh>
+// #include <THC/THCAtomics.cuh>
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
+
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
+static __device__ void atomicAdd(c10::Half* address, c10::Half val)
+{
+  atomicAdd(reinterpret_cast<__half*>(address), static_cast<__half>(val));
+}
+#endif
 
 using namespace at;
 
